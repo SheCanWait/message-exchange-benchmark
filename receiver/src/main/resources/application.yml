@@ -1,2 +1,5 @@
 server:
   port: 8081
+kafka:
+  bootstrapAddress: 29092
+  groupId: test-groupId

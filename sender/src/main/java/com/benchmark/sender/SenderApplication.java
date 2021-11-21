@@ -1,12 +1,9 @@
 package com.benchmark.sender;
 
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.kafka.core.KafkaTemplate;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -15,29 +12,17 @@ import java.util.concurrent.TimeoutException;
 @SpringBootApplication
 public class SenderApplication {
 
-	private final static String QUEUE_NAME = "hello";
-	static Logger logger
-			= LoggerFactory.getLogger(SenderApplication.class);
+	private static final RabbitSender rabbitSender = new RabbitSender();
+	private static final KafkaSender kafkaSender = new KafkaSender();
 
-	public static void main(String[] args) throws IOException, TimeoutException {
+	public static void main(String[] args) {
 		SpringApplication.run(SenderApplication.class, args);
-		ConnectionFactory factory = new ConnectionFactory();
-		factory.setHost("localhost");
-		Connection connection = factory.newConnection();
-		Channel channel = connection.createChannel();
-		channel.queueDeclare(QUEUE_NAME,
-				false,
-				false,
-				false,
-				null);
-		String message = "Welcome to RabbitMQ 33";
-		channel.basicPublish("",
-				QUEUE_NAME,
-				null,
-				message.getBytes(StandardCharsets.UTF_8));
-		logger.debug("[!] Sent '" + message + "'");
-		channel.close();
-		connection.close();
+
+//		rabbitSender.executeRabbitTests(MessagePreparator.prepareMessage(100000000), 100, true);
+//		rabbitSender.executeRabbitTests(MessagePreparator.prepareMessage(100000000), 100, false);
+
+		kafkaSender.executeKafkaTests("dupa1", 5);
+
 	}
 
 }

@@ -10,11 +10,14 @@ import java.util.concurrent.TimeoutException;
 public class ReceiverApplication {
 
 	private static final RabbitReceiver rabbitReceiver = new RabbitReceiver();
+	private static final KafkaReceiver kafkaReceiver = new KafkaReceiver();
 
 	public static void main(String[] args) throws IOException, TimeoutException {
 		SpringApplication.run(ReceiverApplication.class, args);
 
-		rabbitReceiver.startReceivingRabbitMessages();
+//		rabbitReceiver.startReceivingRabbitMessages();
+
+		//kafka listener listens by default
 
 	}
 
