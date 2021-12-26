@@ -1,0 +1,11 @@
+{
+  bookById(id: "book-number"){
+    id
+    name
+    pageCount
+    author {
+      firstName
+      lastName
+    }
+  }
+}

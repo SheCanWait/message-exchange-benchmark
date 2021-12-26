@@ -48,7 +48,7 @@ public class SenderApplication {
 
 
 		Map<String, Object> headers = Collections.singletonMap(KafkaHeaders.TOPIC, "test-topic");
-		producerChannel.send(new GenericMessage<>("dupa1234", headers));
+		producerChannel.send(new GenericMessage<>("dupa12345", headers));
 
 		log.info("Finished ProducerApplication run method...");
 	}
