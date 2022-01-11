@@ -16,7 +16,7 @@ import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.messaging.PollableChannel;
 
-@Configuration
+//@Configuration
 public class ConsumerChannelConfig {
 
     @Value("${kafka.bootstrapAddress}")

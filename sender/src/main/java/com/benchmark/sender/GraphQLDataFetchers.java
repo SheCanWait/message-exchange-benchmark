@@ -38,6 +38,10 @@ public class GraphQLDataFetchers {
                     "lastName", "Rice")
     );
 
+//    static {
+//        TODO long string in map
+//    }
+
     public DataFetcher getBookByIdDataFetcher() {
         return dataFetchingEnvironment -> {
             String bookId = dataFetchingEnvironment.getArgument("id");

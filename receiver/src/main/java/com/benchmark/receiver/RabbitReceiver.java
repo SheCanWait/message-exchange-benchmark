@@ -13,6 +13,7 @@ public class RabbitReceiver {
     static Logger logger = LoggerFactory.getLogger(RabbitReceiver.class);
 
     private final static String QUEUE_NAME = "rabbit_test_queue";
+    private static int counter = 0;
 
     public void startReceivingRabbitMessages() throws IOException, TimeoutException {
         ConnectionFactory factory = new ConnectionFactory();
@@ -30,8 +31,9 @@ public class RabbitReceiver {
                                        AMQP.BasicProperties properties,
                                        byte[] body)
                     throws IOException {
-                String message = new String(body, StandardCharsets.UTF_8);
-                logger.info("[x] Message Recieved' " + null + "'");
+                counter++;
+//                String message = new String(body, StandardCharsets.UTF_8);
+                logger.info("Received message number" + counter);
             }
         };
         channel.basicConsume(QUEUE_NAME, true, consumer);

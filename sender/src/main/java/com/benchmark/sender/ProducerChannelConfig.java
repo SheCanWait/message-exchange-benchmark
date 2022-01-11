@@ -16,7 +16,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.messaging.MessageHandler;
 
-@Configuration
+//@Configuration
 public class ProducerChannelConfig {
 
     @Value("${kafka.bootstrapAddress}")

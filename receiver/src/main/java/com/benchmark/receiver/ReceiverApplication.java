@@ -20,11 +20,13 @@ import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.dsl.context.IntegrationFlowContext;
 import org.springframework.integration.kafka.dsl.Kafka;
+import org.springframework.integration.kafka.inbound.KafkaMessageDrivenChannelAdapter;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.PollableChannel;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
 
@@ -35,34 +37,28 @@ public class ReceiverApplication {
 	@Autowired
 	PollableChannel consumerChannel;
 
-	private static final RabbitReceiver rabbitReceiver = new RabbitReceiver();
+//	private static final RabbitReceiver rabbitReceiver = new RabbitReceiver();
 
-	public static void main(String[] args) throws IOException, TimeoutException {
-//		SpringApplication.run(ReceiverApplication.class, args);
+	public static void main(String[] args) throws IOException, TimeoutException, InterruptedException {
+		SpringApplication.run(ReceiverApplication.class, args);
 
 
 		// uncomment below to run graphQL
 		ConfigurableApplicationContext context = SpringApplication.run(ReceiverApplication.class, args);
 		GraphQLRequestorAndReceiver client = (GraphQLRequestorAndReceiver) context.getBean("graphQLRequestorAndReceiver");
 		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-		BookDto bookDto = client.request("1");
-		log.info("received graphQL response: " + bookDto.getData().getBookById().getName());
+		client.request(3);
 		// uncomment above to run graphQL
 
 		//uncomment below to test REST
 //		RestResponseRequestorAndReceiver restResponseRequestorAndReceiver = new RestResponseRequestorAndReceiver();
-//		String restResult = restResponseRequestorAndReceiver.requestAndReceive("5");
-//
-//		log.info("Rest response: " + restResult);
+//			restResponseRequestorAndReceiver.requestAndReceive(5000);
+
 		//uncomment above to test REST
 
-		//uncomment to run kafka
-//		runConsumer();
-
-//		ConfigurableApplicationContext context = new SpringApplicationBuilder(ReceiverApplication.class).web(WebApplicationType.NONE).run(args);
-//		List<String> topics = Collections.singletonList("test-topic");
-//		context.getBean(ReceiverApplication.class).run(context, topics);
-//		context.close();
+		//uncomment below to run kafka
+//		KafkaConsumerExample.runConsumer();
+		//uncomment above to run kafka
 
 //		rabbitReceiver.startReceivingRabbitMessages();
 
@@ -92,8 +88,14 @@ public class ReceiverApplication {
 		int noMessageFound = 0;
 
 		while (true) {
-			ConsumerRecords<Long, String> consumerRecords = consumer.poll(1000);
+			ConsumerRecords<Long, String> consumerRecords = consumer.poll(Duration.ofMillis(15000));
 			// 1000 is the time in milliseconds consumer will wait if no record is found at broker.
+			consumerRecords.forEach(record -> {
+				log.info("Record Key " + record.key());
+				log.info("Record value " + record.value());
+				log.info("Record partition " + record.partition());
+				log.info("Record offset " + record.offset());
+			});
 			if (consumerRecords.count() == 0) {
 				noMessageFound++;
 				if (noMessageFound > 100)
@@ -117,23 +119,17 @@ public class ReceiverApplication {
 		consumer.close();
 	}
 
-
-
-
-
-
-
 	private void run(ConfigurableApplicationContext context, List<String> topics) {
 		log.info("Inside ProducerApplication run method...");
-		PollableChannel consumerChannel = context.getBean("consumerChannel", PollableChannel.class);
-
+		KafkaMessageDrivenChannelAdapter<String, String> kafkaMessageDrivenChannelAdapter = context.getBean("kafkaMessageDrivenChannelAdapter", KafkaMessageDrivenChannelAdapter.class);
+		PollableChannel consumerChannel = (PollableChannel) kafkaMessageDrivenChannelAdapter.getOutputChannel();
 		for (String topic : topics)
 			addAnotherListenerForTopics(topic);
 
 		Message<?> received = consumerChannel.receive(1000);
 		int x =5;
 		while (true) {
-			received = consumerChannel.receive(1000);
+			received = consumerChannel.receive(20000);
 			//System.out.println("Received " + received.getPayload());
 			if (received != null) {
 				log.info("Received" + received.getPayload());

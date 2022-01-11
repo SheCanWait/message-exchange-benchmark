@@ -27,30 +27,50 @@ public class SenderApplication {
 	private static final RabbitSender rabbitSender = new RabbitSender();
 //	private static final KafkaSender kafkaSender = new KafkaSender();
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException, TimeoutException {
 		SpringApplication.run(SenderApplication.class, args);
 
 //		ApplicationContext context = new AnnotationConfigApplicationContext(ProducerChannelConfig.class);
-		ConfigurableApplicationContext context = new SpringApplicationBuilder(SenderApplication.class).web(WebApplicationType.NONE).run(args);
-		context.getBean(SenderApplication.class).run(context);
-		context.close();
+		// below for kafka
+//		ConfigurableApplicationContext context = new SpringApplicationBuilder(SenderApplication.class).web(WebApplicationType.NONE).run(args);
+//		context.getBean(SenderApplication.class).run(context);
+//		context.close();
+		// above for kafka
 
-//		rabbitSender.executeRabbitTests(MessagePreparator.prepareMessage(100000000), 100, true);
-//		rabbitSender.executeRabbitTests(MessagePreparator.prepareMessage(100000000), 100, false);
+//		StringBuilder str = new StringBuilder();
+//		for (int i = 0; i < 39000; i++) {
+//			str.append("AAAAAaaaaaAAAAAaaaaaAAA25");
+//		}
+//
+//			str.append("message body 123");
+//
+//			byte[] bytes = str.toString().getBytes(StandardCharsets.UTF_8);
+//
+//			rabbitSender.executeRabbitTests(bytes, 5000, false);
 
-//		kafkaSender.executeKafkaTests("dupa1", 5);
+//		rabbitSender.executeRabbitTests(bytes, 100, false);
 
-	}
+		}
 
-	private void run(ConfigurableApplicationContext context) {
-		log.info("Inside ProducerApplication run method...");
-		MessageChannel producerChannel = context.getBean("producerChannel", MessageChannel.class);
+		private void run (ConfigurableApplicationContext context){
+			MessageChannel producerChannel = context.getBean("producerChannel", MessageChannel.class);
 
+			Map<String, Object> headers = Collections.singletonMap(KafkaHeaders.TOPIC, "test-topic");
 
-		Map<String, Object> headers = Collections.singletonMap(KafkaHeaders.TOPIC, "test-topic");
-		producerChannel.send(new GenericMessage<>("dupa12345", headers));
+			StringBuilder str = new StringBuilder();
+			for (int i = 0; i < 39000; i++) {
+				str.append("AAAAAaaaaaAAAAAaaaaaAAA25");
+			}
 
-		log.info("Finished ProducerApplication run method...");
-	}
+			log.info("start sending");
+			for (int i = 0; i < 5000; i++) {
+				String str1 = str.toString();
+				String str11 = " message nr " + (i + 1);
+				str1 += str11;
+				producerChannel.send(new GenericMessage<>(str1, headers));
+				log.info(str11 + " sent");
+			}
+			log.info("stop sending");
+		}
 
 }
