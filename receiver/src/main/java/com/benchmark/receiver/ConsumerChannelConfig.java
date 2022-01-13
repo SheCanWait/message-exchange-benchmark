@@ -19,50 +19,50 @@ import org.springframework.messaging.PollableChannel;
 //@Configuration
 public class ConsumerChannelConfig {
 
-    @Value("${kafka.bootstrapAddress}")
-    private String bootstrapServers;
-
-    @Value("${kafka.topic}")
-    private String springIntegrationKafkaTopic;
-
-    @Bean
-    public PollableChannel consumerChannel() {
-        return new QueueChannel();
-    }
-
-    @Bean
-    public KafkaMessageDrivenChannelAdapter<String, String> kafkaMessageDrivenChannelAdapter() {
-        KafkaMessageDrivenChannelAdapter<String, String> kafkaMessageDrivenChannelAdapter = new KafkaMessageDrivenChannelAdapter<>(
-                kafkaListenerContainer());
-        kafkaMessageDrivenChannelAdapter.setOutputChannel(consumerChannel());
-
-        return kafkaMessageDrivenChannelAdapter;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Bean
-    public ConcurrentMessageListenerContainer<String, String> kafkaListenerContainer() {
-        ContainerProperties containerProps = new ContainerProperties(springIntegrationKafkaTopic);
-
-        ConcurrentMessageListenerContainer<?, ?> container = new ConcurrentMessageListenerContainer<>(
-                consumerFactory(), containerProps);
-        container.getContainerProperties().setGroupId("dummy");
-        return (ConcurrentMessageListenerContainer<String, String>) container;
-    }
-
-    @Bean
-    public ConsumerFactory<?, ?> consumerFactory() {
-        return new DefaultKafkaConsumerFactory<>(consumerConfigs());
-    }
-
-    @Bean
-    public Map<String, Object> consumerConfigs() {
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        properties.put(ConsumerConfig.GROUP_ID_CONFIG, "dummy");
-        return properties;
-    }
+//    @Value("${kafka.bootstrapAddress}")
+//    private String bootstrapServers;
+//
+//    @Value("${kafka.topic}")
+//    private String springIntegrationKafkaTopic;
+//
+//    @Bean
+//    public PollableChannel consumerChannel() {
+//        return new QueueChannel();
+//    }
+//
+//    @Bean
+//    public KafkaMessageDrivenChannelAdapter<String, String> kafkaMessageDrivenChannelAdapter() {
+//        KafkaMessageDrivenChannelAdapter<String, String> kafkaMessageDrivenChannelAdapter = new KafkaMessageDrivenChannelAdapter<>(
+//                kafkaListenerContainer());
+//        kafkaMessageDrivenChannelAdapter.setOutputChannel(consumerChannel());
+//
+//        return kafkaMessageDrivenChannelAdapter;
+//    }
+//
+//    @SuppressWarnings("unchecked")
+//    @Bean
+//    public ConcurrentMessageListenerContainer<String, String> kafkaListenerContainer() {
+//        ContainerProperties containerProps = new ContainerProperties(springIntegrationKafkaTopic);
+//
+//        ConcurrentMessageListenerContainer<?, ?> container = new ConcurrentMessageListenerContainer<>(
+//                consumerFactory(), containerProps);
+//        container.getContainerProperties().setGroupId("dummy");
+//        return (ConcurrentMessageListenerContainer<String, String>) container;
+//    }
+//
+//    @Bean
+//    public ConsumerFactory<?, ?> consumerFactory() {
+//        return new DefaultKafkaConsumerFactory<>(consumerConfigs());
+//    }
+//
+//    @Bean
+//    public Map<String, Object> consumerConfigs() {
+//        Map<String, Object> properties = new HashMap<>();
+//        properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+//        properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+//        properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+//        properties.put(ConsumerConfig.GROUP_ID_CONFIG, "dummy");
+//        return properties;
+//    }
 
 }
